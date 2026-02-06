@@ -1,4 +1,6 @@
 from rank_bm25 import BM25Okapi
+import json
+import os
 
 """
 Non Neural Method of Embedding
@@ -21,15 +23,30 @@ TF (Term Freq) * IDF(Inverse Document Freq)
 """
 
 docs = [
-    "bm25 is a ranking function used by search engines",
-    "python libraries can implement bm25 for information retrieval",
-    "tf idf and bm25 are related but bm25 is usually better for search"
+    {
+        "text": "bm25 is a ranking function used by search engines",
+        "source": "doc1.pdf"
+    },
+    {
+        "text": "python libraries can implement bm25 for information retrieval",
+        "source": "doc2.pdf"
+    },
+    {
+        "text": "tf idf and bm25 are related but bm25 is usually better for search",
+        "source": "doc3.pdf"
+    }
 ]
 
+def save_chunks(chunks, path="chunks.json"):
+    with open(path, "w") as f:
+        json.dump(chunks, f, indent=4)
+
 if __name__ == "__main__":
+
+    save_chunks(docs)
     
     #Tokenize documents
-    tokenized_docs = [d.lower().split() for d in docs]
+    tokenized_docs = [d["text"].lower().split() for d in docs]
 
     bm25 = BM25Okapi(tokenized_docs)
 

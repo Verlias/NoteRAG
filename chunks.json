@@ -1,0 +1,14 @@
+[
+    {
+        "text": "bm25 is a ranking function used by search engines",
+        "source": "doc1.pdf"
+    },
+    {
+        "text": "python libraries can implement bm25 for information retrieval",
+        "source": "doc2.pdf"
+    },
+    {
+        "text": "tf idf and bm25 are related but bm25 is usually better for search",
+        "source": "doc3.pdf"
+    }
+]
