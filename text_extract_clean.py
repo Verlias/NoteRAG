@@ -1,8 +1,8 @@
-import os
 import json
+from pathlib import Path
 from pypdf import PdfReader
+from pptx import Presentation
 
-# Task 1:
 # Create a program that can extract at least TXT and PDF files and convert it to raw text
 # Clean Text - Remove headers and footers, remove page numbers
 # Store extract text locally (file system or database)
@@ -10,82 +10,87 @@ from pypdf import PdfReader
 # Verify correctness by printing clean text to the console
 # /Users/zachwang/projectDocument/pdftest.pdf
 # /Users/zachwang/projectDocument/txttest.txt
+# /Users/zachwang/projectDocument/pptxtest.pptx
 
-output_dir = "output"
-os.makedirs(output_dir, exist_ok=True)
+# Now add compatability with pptx files
+
+output_dir = Path("output")
+output_dir.mkdir(parents=True, exist_ok=True)
 
 # Clean 
 def clean_text(raw):
-    if not raw:
-        return ""
-    
-    cleaned = raw.replace("\n", " ")
-    cleaned = " ".join(cleaned.split())
-    return cleaned
+    if not raw: return ""
+    return " ".join(raw.replace("\n", " ").split())
 
 # Save file
 def save_text(filename,text):
-    path = os.path.join(output_dir,filename )
-    with open(path, "w") as f:
-        f.write(text)
-    return path
+    path = output_dir / filename
+    path.write_text(text, encoding="utf-8")
+    return str(path)
 
 # Main Program
 
 metadata = []
-path = input("Enter file path: ")
+raw_input = input("Enter file path: ")
+path = Path(raw_input)
+
+ext = path.suffix.lower()
+doc_name = path.name
 
 # TXT
-if path.lower().endswith(".txt"):
-    doc_name = os.path.basename(path)
-
-    with open(path, "r") as file:
-        raw_text = file.read()
-
-    cleaned = clean_text(raw_text)
-
-    out_file = f"{doc_name}_cleaned.txt"
-    out_path = save_text(out_file, cleaned)
-
-    metadata.append({
-        "document": doc_name,
-        "output_file": out_path
-    })
-
-    print("\n---CLEANED TXT FILE---")
-    print(cleaned)
-
+if ext == ".txt":
+        raw_text = path.read_text(encoding="utf-8")
+        cleaned = clean_text(raw_text)
+        out_path = save_text(f"{doc_name}_cleaned.txt", cleaned)
+        metadata.append({"document": doc_name, "output_file": out_path})
+        print(cleaned)
 # PDF
 
-elif path.lower().endswith(".pdf"):
-    doc_name = os.path.basename(path)
+elif ext == ".pdf":
     reader = PdfReader(path)
+    for i, page in enumerate(reader.pages, start=1):
+        cleaned_page = clean_text(page.extract_text())
+        out_path = save_text(f"{doc_name}_page_{i}.txt", cleaned_page)
+        metadata.append({
+             "document": doc_name, 
+             "page": i, 
+             "out_file": out_path
+             })
+        print(f"\n--- Page {i} ---\n{cleaned_page}")
 
-    for i, page in enumerate(reader.pages, start = 1):
-        raw_page = page.extract_text() or ""
-        cleaned_page = clean_text(raw_page)
+# pptx
+elif ext == ".pptx":
+    pwpt = Presentation(path)
 
-        out_file = f"{doc_name}_page_{i}.txt"
-        out_path = save_text(out_file, cleaned_page)
+    for i, slide in enumerate(pwpt.slides, start=1):
+        text_runs = []
 
+        for shape in slide.shapes:
+              if not shape.has_text_frame:
+                   continue
+              
+              for paragraph in shape.text_frame.paragraphs:
+                   for run in paragraph.runs:
+                        text_runs.append(run.text)
+
+        raw_slide_text = " ".join(text_runs)
+        cleaned_text = clean_text(raw_slide_text)
+        out_path = save_text(f"{path.stem}_slide_{i}.txt", cleaned_text)
         metadata.append({
             "document": doc_name,
-            "page": i,
+            "slide": i,
             "out_file": out_path
         })
-
-        print(f"/n---PDF PAGE {i}---")
-        print(cleaned_page)
+        print(f"\n--- Slide {i} ---\n{cleaned_text}")
 
 # Unsupported File Type
 
 else:
-    print("Unsupported file type")
+     print("Unsupported file type")
 
 # Saving Metadata
 
-meta_path = os.path.join(output_dir, f"metadata_{doc_name}.json")
-with open(meta_path, "w") as f:
-    json.dump(metadata, f, indent = 2)
+meta_path = output_dir / f"metadata_{path.stem}.json" # path.stem is name without extension
+meta_path.write_text(json.dumps(metadata, indent=2))
 
-print("\nMetadata saved to:", meta_path)
+print(f"\nMetadata saved to: {meta_path}")
