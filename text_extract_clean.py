@@ -3,17 +3,6 @@ from pathlib import Path
 from pypdf import PdfReader
 from pptx import Presentation
 
-# Create a program that can extract at least TXT and PDF files and convert it to raw text
-# Clean Text - Remove headers and footers, remove page numbers
-# Store extract text locally (file system or database)
-# Save basic metadata - Document name, page number (for PDFs)
-# Verify correctness by printing clean text to the console
-# /Users/zachwang/projectDocument/pdftest.pdf
-# /Users/zachwang/projectDocument/txttest.txt
-# /Users/zachwang/projectDocument/pptxtest.pptx
-
-# Now add compatability with pptx files
-
 output_dir = Path("output")
 output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -90,7 +79,7 @@ else:
 
 # Saving Metadata
 
-meta_path = output_dir / f"metadata_{path.stem}.json" # path.stem is name without extension
+meta_path = output_dir / f"metadata_{path.stem}.json" 
 meta_path.write_text(json.dumps(metadata, indent=2))
 
 print(f"\nMetadata saved to: {meta_path}")
