@@ -2,8 +2,9 @@ import numpy as np
 import json
 import os
 from sentence_transformers import SentenceTransformer
+from sklearn.preprocessing import normalize
 
-model = SentenceTransformer('all-MiniLM-L6-v2')
+model = SentenceTransformer('BAAI/bge-base-en-v1.5')
 
 """
 Non Neural Method of Embedding
@@ -46,10 +47,12 @@ def save_chunks(chunks, path="chunks.json"):
 
 if __name__ == "__main__":
 
-    #Tokenize documents
-    tokenized_docs = [d["text"] for d in docs]
+    
+    texts = ["passage: " + d["text"] for d in docs]
 
-    embeddings = model.encode(tokenized_docs, convert_to_numpy=True)
+    embeddings = model.encode(texts, convert_to_numpy=True)
+    embeddings = normalize(embeddings)
+    # embeddings = embeddings / np.linalg.norm(embeddings, axis=1, keepdims=True)
 
     for i, chunk in enumerate(docs):
         chunk["embedding"] = embeddings[i].tolist()

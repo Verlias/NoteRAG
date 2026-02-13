@@ -1,18 +1,19 @@
 import numpy as np
 import json
 from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.preprocessing import normalize
 
-model = SentenceTransformer('all-MiniLM-L6-v2')
+model = SentenceTransformer('BAAI/bge-base-en-v1.5')
 
 def load_chunks(path):
     with open(path, 'r') as f:
         return json.load(f)
 
 def retrieve(query, chunks, top_k):
-    query_embedding = model.encode([query], convert_to_numpy=True)
+    query_embedding = model.encode(["query: " + query], convert_to_numpy=True)
+    query_embedding = normalize(query_embedding)
     doc_embeddings = np.array([chunk["embedding"] for chunk in chunks])
-    scores = cosine_similarity(query_embedding, doc_embeddings)[0]
+    scores = np.dot(doc_embeddings, query_embedding.T).squeeze()
 
     rank_indices = np.argsort(scores)[::-1][:top_k]
     results = []
