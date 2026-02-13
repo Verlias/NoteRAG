@@ -1,20 +1,18 @@
-from rank_bm25 import BM25Okapi
 import numpy as np
 import json
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+
+model = SentenceTransformer('all-MiniLM-L6-v2')
 
 def load_chunks(path):
     with open(path, 'r') as f:
-        chunks = json.load(f)
-    return chunks
+        return json.load(f)
 
-def build_index(chunks):
-    tokenized_docs = [chunk["text"].lower().split() for chunk in chunks]
-    bm25 = BM25Okapi(tokenized_docs)
-    return bm25
-
-def retrieve(query, bm25, chunks, top_k):
-    tokenized_query = query.lower().split()
-    scores = bm25.get_scores(tokenized_query)
+def retrieve(query, chunks, top_k):
+    query_embedding = model.encode([query], convert_to_numpy=True)
+    doc_embeddings = np.array([chunk["embedding"] for chunk in chunks])
+    scores = cosine_similarity(query_embedding, doc_embeddings)[0]
 
     rank_indices = np.argsort(scores)[::-1][:top_k]
     results = []
@@ -30,7 +28,6 @@ def retrieve(query, bm25, chunks, top_k):
 
 if __name__ == "__main__":
     chunks = load_chunks("chunks.json")
-    bm25 = build_index(chunks)
 
     print("Ready for queries. Type 'quit' to exit")
 
@@ -39,7 +36,7 @@ if __name__ == "__main__":
         if query.lower() == 'quit':
             break
 
-        results = retrieve(query, bm25, chunks, top_k=5)
+        results = retrieve(query, chunks, top_k=5)
         for i, res in enumerate(results, 1):
             print(f"Result {i}")
             print(f"Source: {res['source']}")
