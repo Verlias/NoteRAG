@@ -1,6 +1,10 @@
-from rank_bm25 import BM25Okapi
+import numpy as np
 import json
 import os
+from sentence_transformers import SentenceTransformer
+from sklearn.preprocessing import normalize
+
+model = SentenceTransformer('BAAI/bge-base-en-v1.5')
 
 """
 Non Neural Method of Embedding
@@ -43,21 +47,19 @@ def save_chunks(chunks, path="chunks.json"):
 
 if __name__ == "__main__":
 
-    save_chunks(docs)
     
-    #Tokenize documents
-    tokenized_docs = [d["text"].lower().split() for d in docs]
+    texts = ["passage: " + d["text"] for d in docs]
 
-    bm25 = BM25Okapi(tokenized_docs)
+    embeddings = model.encode(texts, convert_to_numpy=True)
+    embeddings = normalize(embeddings)
+    # embeddings = embeddings / np.linalg.norm(embeddings, axis=1, keepdims=True)
 
-    query = "bm25 in python"
-    tokenized_query = query.lower().split()
+    for i, chunk in enumerate(docs):
+        chunk["embedding"] = embeddings[i].tolist()
 
-    scores = bm25.get_scores(tokenized_query)
-    top_n = bm25.get_top_n(tokenized_query, docs, n=3)
+    save_chunks(docs)
 
-    print(f"Scores: ", scores)
-    print("Top Docs: ", top_n)
+    print("embeddings saved to chunks.json")
 
 
     
