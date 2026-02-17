@@ -14,7 +14,7 @@ def clean_text(raw):
 # Save file
 def save_text(filename,text):
     path = output_dir / filename
-    path.write_text(text, encoding="utf-8")
+    path.write_text(text, encoding="utf-8-sig")
     return str(path)
 
 # Main Program
@@ -28,29 +28,38 @@ doc_name = path.name
 
 # TXT
 if ext == ".txt":
-        raw_text = path.read_text(encoding="utf-8")
+        raw_text = path.read_text(encoding="utf-8-sig")
         cleaned = clean_text(raw_text)
-        out_path = save_text(f"{doc_name}_cleaned.txt", cleaned)
-        metadata.append({"document": doc_name, "output_file": out_path})
+    
+        metadata.append({
+            "source_type": "txt",
+            "document": doc_name, 
+            "cleaned_text": cleaned
+            })
         print(cleaned)
 # PDF
 
 elif ext == ".pdf":
     reader = PdfReader(path)
+    metadata.append({
+            "source_type": "pdf",
+             "document": doc_name, 
+    })
     for i, page in enumerate(reader.pages, start=1):
         cleaned_page = clean_text(page.extract_text())
-        out_path = save_text(f"{doc_name}_page_{i}.txt", cleaned_page)
         metadata.append({
-             "document": doc_name, 
              "page": i, 
-             "out_file": out_path
+             "cleaned_text": cleaned_page
              })
         print(f"\n--- Page {i} ---\n{cleaned_page}")
 
 # pptx
 elif ext == ".pptx":
     pwpt = Presentation(path)
-
+    metadata.append({
+            "source_type": "pptx",
+            "document": doc_name,
+    })
     for i, slide in enumerate(pwpt.slides, start=1):
         text_runs = []
 
@@ -64,11 +73,9 @@ elif ext == ".pptx":
 
         raw_slide_text = " ".join(text_runs)
         cleaned_text = clean_text(raw_slide_text)
-        out_path = save_text(f"{path.stem}_slide_{i}.txt", cleaned_text)
         metadata.append({
-            "document": doc_name,
             "slide": i,
-            "out_file": out_path
+            "cleaned_text": cleaned_text
         })
         print(f"\n--- Slide {i} ---\n{cleaned_text}")
 
