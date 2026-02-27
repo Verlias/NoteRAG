@@ -3,7 +3,7 @@ from google.genai import types
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
-client = genai.Client(api_key="")
+client = genai.Client()
 
 texts = [
     "What is the meaning of life?",
@@ -14,6 +14,7 @@ texts = [
 result = client.models.embed_content(
     model="gemini-embedding-001",
     contents=texts,
+    #Replace with RETRIEVAL_DOCUMENT task type
     config=types.EmbedContentConfig(task_type="SEMANTIC_SIMILARITY")
 )
 
