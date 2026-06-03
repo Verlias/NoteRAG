@@ -1,0 +1,78 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# Test results
+TestResults/
+
+# NuGet
+*.nupkg
+*.snupkg
+
+# Local packages
+packages/
+
+# Logs
+*.log
+
+# Coverage reports
+coverage/
+coverage-results/
+*.coverage
+*.coveragexml
+
+# Publish output
+publish/
+
+# Generated files
+Generated/
+wwwroot/lib/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+
+# Secrets
+secrets.json
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
+
+# Certificates
+*.pfx
+*.pem
+*.key
+*.crt
+
+# Azure
+.local.settings.json
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker overrides
+docker-compose.override.yml
+
+# User-specific config
+launchSettings.json
