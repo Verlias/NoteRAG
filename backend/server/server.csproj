@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Google.GenAI" Version="1.7.0" />
+    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
   </ItemGroup>
 
 </Project>
