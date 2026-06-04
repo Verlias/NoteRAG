@@ -1,0 +1,97 @@
+## ======================================
+## Build outputs
+## ======================================
+bin/
+obj/
+out/
+
+## ======================================
+## User-specific files (Visual Studio / Rider / VS Code)
+## ======================================
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Rider
+.idea/
+
+## ======================================
+## ASP.NET Core / .NET
+## ======================================
+appsettings.Development.json
+appsettings.*.local.json
+
+# User secrets (VERY important)
+secrets.json
+*.Secrets.json
+
+# EF Core migrations local artifacts
+Migrations/*.Designer.cs~
+Migrations/*Snapshot.cs~
+
+## ======================================
+## Logs / runtime
+## ======================================
+*.log
+logs/
+*.out
+
+## ======================================
+## Test results
+## ======================================
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+## ======================================
+## Publish output
+## ======================================
+publish/
+*.publish.xml
+
+## ======================================
+## NuGet
+## ======================================
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+
+# NuGet cache override (optional safety)
+**/project.assets.json
+**/project.nuget.cache
+
+## ======================================
+## Local DB files
+## ======================================
+*.db
+*.sqlite
+*.sqlite3
+
+## ======================================
+## Environment files
+## ======================================
+.env
+.env.*
+
+## ======================================
+## OS files
+## ======================================
+.DS_Store
+Thumbs.db
+
+## ======================================
+## Docker (optional local overrides)
+## ======================================
+docker-compose.override.yml
+
+## ======================================
+## Sensitive config (extra safety)
+## ======================================
+*.pfx
+*.key
+*.pem
