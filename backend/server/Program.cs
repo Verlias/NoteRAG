@@ -18,6 +18,8 @@ namespace myApplication
             double[] Vector2 = [0.15, -0.41, 0.83, 0.29, -0.11, 0.61, -0.69, 0.20];
 
             double cosine_similiarity_vector = VectorComparison.CosineSimiliarity(Vector1, Vector2);
+
+            PdfTextExtractor.Extract();
             Console.WriteLine($"Cosine Similiarity Vector: {cosine_similiarity_vector}");
         }
     }
